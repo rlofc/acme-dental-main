@@ -20,5 +20,8 @@ check: format lint ## Format and lint code
 run: ## Run the agent
 	uv run python src/main.py
 
+debug: ## Run the agent with debug messages
+	uv run python src/main.py --debug
+
 test: ## Run tests
 	uv run pytest

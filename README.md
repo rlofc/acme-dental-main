@@ -1,5 +1,63 @@
 # Acme Dental AI Agent
 
+## Solution Notes
+
+### Overview
+
+The solution is based on the guidelines provided in the enclosed [README.md] file.
+The provided non-functional requirements dictated using `LangChain` and `Calendly`.
+The agent should be constructed using `LangGraph`.
+
+### Current design choices
+
+#### Calendly API
+To access Calendly, an API wrapper class was generated using a coding agent and
+was hand-customised as needed.
+
+**TODO:** At the moment, the API access is synchronous, not rate-limited, etc. A better implementation would be to use an asynchronous queue (rpc or local).
+
+#### LangChain and LangGraph
+
+- `LangChain` tools were implemented to use the Calendly wrapper and a preliminary KB dataset.
+- A simplistic `LangGraph` was written using the documentation to walk through
+the basic workflows.
+
+- [ ] **TODO:** A better and safer graph should be written to minimize edge cases.
+- [ ] **TODO:** The KB should be an external data set that can be managed by the user.
+- [ ] **TODO:** Calendly data that can be cached should be cached
+
+### Solution structure
+
+The solution is presented with the following folder structure:
+
+```
+acme-dental-main
+├─ src
+│  ├─ api
+│  ├─ tools
+│  └─ prompts
+```
+
+**api** contains wrappers to external services (e.g. Calendly)
+**tools** contains LangChain tool implementations, mostly interfacing with external services
+**prompts** contains prompts we rely on for our system behavior
+
+### Testing
+
+An integration testing starter module was staged to validate the agent's trajectory through the tools. The module is using `agentevals` and its llm-as-judge capability (using OpenAI).
+Mock tools were defined to ensure deterministic tool responses.
+Dependencies-injection was implemented in the agent initialization to reduce code duplication.
+
+**TODO:** Expand the tests for much more coverage. Focus on PII-safety.
+
+### Production Reliability
+
+To be implemented.
+
+- [ ] **TODO:** Basic metrics exporting.
+- [ ] **TODO:** CircleCI workflow.
+- [ ] **TODO:** Production-grade logger backend.
+
 ## Your Task
 
 Build an AI agent that allow users to book dental check-up appointments with a fictitious Acme Dental clinic through natural language conversation in a chat interface.
