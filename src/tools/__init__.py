@@ -74,6 +74,7 @@ def build_rescheduling_tools(calendly_client: CalendlyClient) -> dict[str, BaseT
         ListCalendlyEventInviteesTool,
         ListCalendlyEventTypeAvailableTimesTool,
         CreateCalendlyInviteeTool,
+        CancelCalendlyEventTool,
     ]:
         instance = cls(calendly_client)
         tools[instance.name] = instance
@@ -89,6 +90,7 @@ def build_rescheduling_tools_for_tests(calendly_client: CalendlyClient) -> dict[
         MockListCalendlyEventInviteesTool,
         MockListCalendlyEventTypeAvailableTimesTool,
         MockCreateCalendlyInviteeTool,
+        MockCancelCalendlyEventTool,
     ]:
         instance = cls(calendly_client)
         tools[instance.name] = instance

@@ -8,6 +8,7 @@ from agentevals.trajectory.llm import (
     TRAJECTORY_ACCURACY_PROMPT_WITH_REFERENCE,
     create_trajectory_llm_as_judge,
 )
+from agentevals.trajectory.match import create_trajectory_match_evaluator
 from dotenv import load_dotenv
 from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
 
@@ -34,14 +35,22 @@ def calendly_agent():
         "cancel": build_cancelling_tools_for_tests(calendly_client),
         "leave": {},
     }
-    return create_acme_dental_agent(intent_tool_sets=intent_tool_sets)
+    return create_acme_dental_agent(intent_tool_sets=intent_tool_sets, greet=False)
 
 
 @pytest.fixture
-def trajectory_evaluator():
+def trajectory_llm_evaluator():
     return create_trajectory_llm_as_judge(
         prompt=TRAJECTORY_ACCURACY_PROMPT_WITH_REFERENCE,
         model="openai:o3-mini",
+    )
+
+
+@pytest.fixture
+def trajectory_match_evaluator():
+    return create_trajectory_match_evaluator(
+        trajectory_match_mode="strict",
+        tool_args_match_mode="exact",
     )
 
 
@@ -60,57 +69,28 @@ def run_trajectory_test(agent, evaluator, user_message, reference_trajectory):
 
 
 @pytest.mark.asyncio
-async def test_naive_user_appointments_check_flow(calendly_agent, trajectory_evaluator):
+async def test_naive_user_appointments_check_flow(calendly_agent, trajectory_match_evaluator):
     """
     Verify a naive trajectory when the user is asking to be reminded
     of their appointments.
 
-    - The reference tranjectory is:
-      * get_calendly_current_user
-      * list_calendly_scheduled_events
-      * list_calendly_event_invitees
-
-    Evaluation is done using llm-as-judge
+    No tools should be invoked in this scenario.
     """
     reference_trajectory = [
         HumanMessage(content=""),
-        AIMessage(content="", tool_calls=[{"id": "call_1", "name": "get_calendly_current_user", "args": {}}]),
-        ToolMessage(content="", tool_call_id="call_1"),
-        AIMessage(
-            content="",
-            tool_calls=[
-                {
-                    "id": "call_2",
-                    "name": "list_calendly_scheduled_events",
-                    "args": {"input_str": '{"user": "xyz", "organization": "xyz"}'},
-                }
-            ],
-        ),
-        ToolMessage(content="", tool_call_id="call_2"),
-        AIMessage(
-            content="",
-            tool_calls=[
-                {
-                    "id": "call_3",
-                    "name": "list_calendly_event_invitees",
-                    "args": {"event_uri": "https://api.calendly.com/scheduled_events/ABC123"},
-                }
-            ],
-        ),
-        ToolMessage(content="", tool_call_id="call_3"),
         AIMessage(content="", tool_calls=[]),
     ]
 
     run_trajectory_test(
         calendly_agent,
-        trajectory_evaluator,
+        trajectory_match_evaluator,
         user_message="What are my appointments?",
         reference_trajectory=reference_trajectory,
     )
 
 
 @pytest.mark.asyncio
-async def test_naive_appointment_scheduling_flow_with_appointment_type(calendly_agent, trajectory_evaluator):
+async def test_naive_appointment_scheduling_flow_with_appointment_type(calendly_agent, trajectory_llm_evaluator):
     """
     Verify, using an LLM-as-judge evaluation, a naive trajectory when the user
     is asking for a free appointment slot for a dental checkup on a specific date.
@@ -158,14 +138,14 @@ async def test_naive_appointment_scheduling_flow_with_appointment_type(calendly_
 
     run_trajectory_test(
         calendly_agent,
-        trajectory_evaluator,
+        trajectory_llm_evaluator,
         user_message="Do you have a free appointment slot on January 1st 2030 for a Dental checkup",
         reference_trajectory=reference_trajectory,
     )
 
 
 @pytest.mark.asyncio
-async def test_naive_rescheduling_flow(calendly_agent, trajectory_evaluator):
+async def test_naive_rescheduling_flow(calendly_agent, trajectory_llm_evaluator):
     """
     Verify, using an LLM-as-judge evaluation, a naive trajectory when the user
     is asking for a free appointment slot for a dental checkup on a specific date.
@@ -237,7 +217,7 @@ async def test_naive_rescheduling_flow(calendly_agent, trajectory_evaluator):
 
     run_trajectory_test(
         calendly_agent,
-        trajectory_evaluator,
+        trajectory_llm_evaluator,
         user_message=(
             "I'd like to reschedule my January 1st 10:30 appointment to 11am on the same day."
             " My email is 'test@foo.com'"
@@ -247,7 +227,7 @@ async def test_naive_rescheduling_flow(calendly_agent, trajectory_evaluator):
 
 
 @pytest.mark.asyncio
-async def test_cancel_appointment_flow(calendly_agent, trajectory_evaluator):
+async def test_cancel_appointment_flow(calendly_agent, trajectory_llm_evaluator):
     """
     Verify, using an LLM-as-judge evaluation, a cancel trajectory when the user
     is asking to cancel their specific appointment.
@@ -302,7 +282,7 @@ async def test_cancel_appointment_flow(calendly_agent, trajectory_evaluator):
 
     run_trajectory_test(
         calendly_agent,
-        trajectory_evaluator,
+        trajectory_llm_evaluator,
         user_message=(
             "I'd like to cancel my appointment on January 1st, 2030."
             " My name is 'Test Test' and my email is 'test@foo.com'"
@@ -312,7 +292,7 @@ async def test_cancel_appointment_flow(calendly_agent, trajectory_evaluator):
 
 
 @pytest.mark.asyncio
-async def test_random_question_flow(calendly_agent, trajectory_evaluator):
+async def test_random_question_flow(calendly_agent, trajectory_llm_evaluator):
     """
     Verify, using an LLM-as-judge evaluation, a random question trajectory when the user
     is asking a quesion we can answer on from our knowledge-base.
@@ -344,7 +324,7 @@ async def test_random_question_flow(calendly_agent, trajectory_evaluator):
 
     run_trajectory_test(
         calendly_agent,
-        trajectory_evaluator,
+        trajectory_llm_evaluator,
         user_message="Can I just come in to the clinic without an appointment?",
         reference_trajectory=reference_trajectory,
     )

@@ -1,3 +1,4 @@
 $agent_prompt
 
 Your job right now is to assist the client to cancel a meeting they already booked.
+The event_uuid you will need to use is the same uuid you will find in the event links list that has 'scheduled_event' in the path.

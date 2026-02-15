@@ -26,15 +26,18 @@ acme-dental-main
 
 ### Current design choices
 
-#### LangChain and LangGraph
+#### Agent structure
 
 - `LangChain` tools were implemented to use the Calendly wrapper and a preliminary KB dataset.
-- A customised `LangGraph` was written using the available online documentation. The graph is branching to different nodes based on the client intent.
-- The tools are grouped for each intent node.
+- A customised `LangGraph` was written by following the online documentation. The graph is branching to different nodes based on the client intent.
+- The tools are grouped for each intent node for better scoping.
+- System messages are intent-specific.
 
 ```mermaid
 flowchart LR
-    START --> detect_intent
+    START --> greet
+
+    greet --> user_input
 
     detect_intent --> question
     detect_intent --> schedule
@@ -56,50 +59,62 @@ flowchart LR
     leave --> END
 ```
 
-- [ ] **TODO:** The KB should be an external data set that can be managed by the user.
-- [ ] **TODO:** Tools data that can be cached should be cached
+##### **TODO**
+
+- [ ] A better representation of state will probably help with predictability.
+- [ ] Tools data that can be cached should be cached.
+- [ ] The KB should be an external data set that can be managed by the user.
+- [ ] User input via `interrupt()` can probably be better.
+- [ ] Tools are currently synchronous. It may be better to make some `asynchronous` and have the graph support communicating with the user in the meantime.
 
 #### Calendly API
 To access Calendly, an API wrapper class was generated using a coding agent and
 was then hand-customised as needed.
 
-**TODO:** At the moment, the API access is synchronous, not rate-limited, etc. A better implementation would be to use an asynchronous queue (rpc or local).
+##### **TODO**
+- [ ] At the moment, the API access is synchronous, not rate-limited, etc. A better implementation would be to use an asynchronous queue (rpc or local).
+- [ ] Data should be represented as TypedDicts.
+- [ ] Error handling.
 
 ### Testing
 
 An integration testing starter module was staged to validate the agent's trajectory through the tools. The module is using `agentevals` and its llm-as-judge capability (using OpenAI).
 Mock tool sets were defined to ensure deterministic tool responses.
-Dependencies-injection was implemented in the agent initialization to reduce code duplication.
+Dependencies-injection was implemented in the agent initialisation to reduce code duplication.
 
-**TODO:** Expand the tests for much more coverage. Focus on PII-safety.
+##### **TODO**
+- [ ] Implement finer-grained unit-tests.
+- [ ] Expand the tests for much more coverage. Focus on PII-safety.
 
 ### Missing production-grade features (partial list)
 
 #### Reliability
 
-To be implemented.
-
-- [ ] **TODO:** Restructure to gRPC services.
-- [ ] **TODO:** Enable per-service load-balancing / rate-limiting.
-- [ ] **TODO:** Basic metrics exporting.
-- [ ] **TODO:** Logging backend.
+##### **TODO**
+- [ ] Restructure to gRPC services.
+- [ ] Enable per-service load-balancing / rate-limiting.
+- [ ] Basic metrics exporting.
+- [ ] Logging backend.
 
 #### Performance & Efficiency
 
+##### **TODO**
 - [ ] **TODO:** Cache re-usable responses.
 
 #### Configuration
 
-- [ ] **TODO:** Support configuration loading / rollouts.
+##### **TODO**
+- [ ] Support configuration loading / rollouts.
 
 #### Deployment
 
-- [ ] **TODO:** CircleCI workflow.
-- [ ] **TODO:** Docker / Kubernetes manifests.
+##### **TODO**
+- [ ] CircleCI / Github / other workflow.
+- [ ] Docker / Kubernetes manifests.
 
 #### Billing
 
-- [ ] **TODO:** Collect and process usage metrics.
+- [ ] Collect and process usage metrics.
 
 ## Your Task
 

@@ -3,3 +3,7 @@ $agent_prompt
 Your job right now is to assist the client with re-scheduling an appointment they already previously booked.
 
 You will do so by finding out the details of their existing appointment, help them find a new available appointment slot, then book the new appointment and finally cancel the previously booked appointment.
+
+The event_uuid you will need to use when cancelling is the same uuid you will find in the event links list that has 'scheduled_event' in the path.
+
+Before invoking any tools, make sure you have the client's email.

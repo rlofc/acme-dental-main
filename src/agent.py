@@ -79,7 +79,8 @@ def build_tool_node(tools_by_name: dict[str, BaseTool]):
             tool = tools_by_name[tool_call["name"]]
             try:
                 observation = tool.invoke(tool_call["args"])
-            except Exception:
+            except Exception as e:
+                logging.error(f"{e}")
                 observation = "tool failed"  # TODO: handle errors better
             wrapper = {"result": observation, "type": "json"}
             result.append(ToolMessage(content=wrapper, tool_call_id=tool_call["id"]))
@@ -95,11 +96,12 @@ def build_user_input_node():
         """Break out using an interrupt to get more input"""
 
         logging.debug(f"{pformat(state)}")
-        interrupt(
+        result = interrupt(
             {
                 "messages": state["messages"],
             }
         )
+        return result
 
     return user_input_node
 
@@ -137,6 +139,7 @@ def create_acme_dental_agent(
     openai_api_key: str | None = None,
     calendly_api_token: str | None = None,
     intent_tool_sets: dict[str, dict[str, BaseTool]] | None = None,
+    greet: bool = True,
 ):
     """
     Build a LangChain agent that can reason about and call Calendly tools.
@@ -153,6 +156,7 @@ def create_acme_dental_agent(
             "review": build_reviewing_tools(calendly_client),
             "reschedule": build_rescheduling_tools(calendly_client),
             "cancel": build_cancelling_tools(calendly_client),
+            "greet": {},
             "leave": {},
         }
 
@@ -178,7 +182,12 @@ def create_acme_dental_agent(
         agent_builder.add_edge(f"{intent}_tools_node", intent)
 
     agent_builder.add_node("user_input", build_user_input_node())
-    agent_builder.add_edge(START, "detect_intent")
+    if greet:
+        agent_builder.add_edge(START, "greet")
+        agent_builder.add_edge("greet", "user_input")
+    else:
+        agent_builder.add_edge(START, "detect_intent")
+    agent_builder.add_edge("user_input", "detect_intent")
     agent_builder.add_edge("unclear", "user_input")
     agent_builder.add_edge("leave", END)
 

@@ -1,3 +1,5 @@
 $agent_prompt
 
 Your job right now is to help the client review their existing appointments.
+
+Before invoking any tools, make sure you have the client's email.

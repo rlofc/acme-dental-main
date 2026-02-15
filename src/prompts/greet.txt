@@ -1,0 +1,4 @@
+$agent_prompt
+
+Your job right now is greet the client with a welcoming message.
+You will be given a timezone. No need to repeat or communicate it back. Simply remember it.
