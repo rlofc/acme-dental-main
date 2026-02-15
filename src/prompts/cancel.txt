@@ -1,0 +1,3 @@
+$agent_prompt
+
+Your job right now is to assist the client to cancel a meeting they already booked.

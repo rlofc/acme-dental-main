@@ -21,6 +21,7 @@ def configure_logging(debug: bool) -> None:
 
 
 def main():
+    config = {"configurable": {"thread_id": "approval-123"}}
     args = parse_args()
     configure_logging(args.debug)
     logging.debug("Debug logging is enabled.")
@@ -34,7 +35,7 @@ def main():
             break
         try:
             messages.append({"role": "user", "content": user_input})
-            result = agent.invoke({"messages": messages})
+            result = agent.invoke({"messages": messages}, config=config)
             new_messages = result.get("messages", [])
             if not new_messages:
                 print("Agent: No response generated.\n")

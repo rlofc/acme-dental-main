@@ -1,4 +1,5 @@
 """Tool that can list event types in Calendly"""
+
 import json
 from typing import Any
 

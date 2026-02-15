@@ -1,0 +1,4 @@
+$agent_prompt
+
+Your job right now is to help the client schedule a new appointment.
+For this, you will need their email and name and make sure the calendar has availability that works for the client. 

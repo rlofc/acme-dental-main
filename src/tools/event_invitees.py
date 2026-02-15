@@ -1,4 +1,5 @@
 """Tool that can list event invitees in Calendly"""
+
 from typing import Any
 
 from langchain.tools import BaseTool

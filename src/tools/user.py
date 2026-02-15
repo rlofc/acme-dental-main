@@ -1,4 +1,5 @@
 """Tool that can obtain the main user context in Calendly"""
+
 from typing import Any
 
 from langchain.tools import BaseTool

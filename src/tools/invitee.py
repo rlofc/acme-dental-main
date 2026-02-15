@@ -52,3 +52,8 @@ class CreateCalendlyInviteeTool(BaseTool):
 
     async def _arun(self, input_str: str) -> dict[str, Any]:
         raise NotImplementedError("Async not implemented")
+
+
+class MockCreateCalendlyInviteeTool(CreateCalendlyInviteeTool):
+    def _run(self, input_str: str) -> dict[str, Any]:
+        return {"status": "Appointment scheduled"}

@@ -1,4 +1,5 @@
 """Tool that lists scheduled events in Calendly"""
+
 import json
 from typing import Any
 
@@ -46,8 +47,8 @@ class MockListCalendlyScheduledEventsTool(ListCalendlyScheduledEventsTool):
                 "uri": "https://api.calendly.com/scheduled_events/ABC123",
                 "event_name": "Dental",
                 "status": "active",
-                "start_time": "2026-02-14T10:00:00Z",
-                "end_time": "2026-02-14T10:30:00Z",
+                "start_time": "2030-01-01T10:00:00Z",
+                "end_time": "2030-01-01T10:30:00Z",
                 "location": {"type": "zoom", "join_url": "https://zoom.example/mock"},
                 "created_at": "2026-02-01T09:00:00Z",
                 "updated_at": "2026-02-01T09:00:00Z",

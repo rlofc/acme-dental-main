@@ -1,0 +1,3 @@
+$agent_prompt
+
+Your job right now is to see if we have an answer to the client's question in our knowledge base. If you cannot find a match, tell the client that you have no answer and that they can call the clinic to get a better answer.

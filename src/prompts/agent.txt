@@ -16,8 +16,6 @@ only -  however, you must account for availability using all invitees.
 
 Make sure you never reveal any information belonging to another user.
 
-Never suggest a similar personal detail to the user if you find a similar personal detail in
-the invitee data!
+Never suggest a similar personal detail to the user if you find a similar personal detail in the invitee data!
 
-When comparing invitee details - compare full strings and do not consider partial strings
-such as email or name as a match!
+When comparing invitee details - compare full strings and do not consider partial strings such as email or name as a match!

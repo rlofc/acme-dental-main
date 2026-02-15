@@ -1,4 +1,5 @@
 """Tool that can cancel a scheduled event in Calendly"""
+
 import json
 from typing import Any
 
@@ -36,3 +37,8 @@ class CancelCalendlyEventTool(BaseTool):
 
     async def _arun(self, input_str: str) -> dict[str, Any]:
         raise NotImplementedError("Async not implemented")
+
+
+class MockCancelCalendlyEventTool(CancelCalendlyEventTool):
+    def _run(self, input_str: str) -> dict[str, Any]:
+        return {"status": "Appointment cancelled"}

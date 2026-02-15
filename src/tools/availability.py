@@ -1,4 +1,5 @@
 """Tool that can list appointments availability in Calendly"""
+
 import json
 from typing import Any
 
@@ -63,5 +64,11 @@ class MockListCalendlyEventTypeAvailableTimesTool(ListCalendlyEventTypeAvailable
                 "event_name": "Dental",
                 "start_time": "2030-01-01T10:00:00Z",
                 "end_time": "2030-01-01T10:30:00Z",
-            }
+            },
+            {
+                "event_type": "1",
+                "event_name": "Dental",
+                "start_time": "2030-01-01T10:30:00Z",
+                "end_time": "2030-01-01T11:00:00Z",
+            },
         ]
